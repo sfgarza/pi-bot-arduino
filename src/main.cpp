@@ -18,6 +18,7 @@ L298N backLeft(END, IN7, IN8);
 float  joystick_val = 0; 
 float  pwmOutput    = PWM_MIN;
 char   command[20];
+int    direction;
 
 void setup() {
 
@@ -39,25 +40,34 @@ void setup() {
 void loop() {
   
   // Read data only when available.
-  /*if (Serial.available() > 0) {
-   
-    Serial.println( 'BAR' );
-    
+  if (Serial.available() > 0) {
     Serial.readBytesUntil(':',command, 8); // First read command.
     joystick_val = Serial.parseFloat(); // Then the command value.
-    pwmOutput = mapf(joystick_val, JOYSTICK_MIN, JOYSTICK_MAX, PWM_MIN, PWM_MAX); // Convert to PWM value.
+    
+    pwmOutput = mapf(joystick_val, JOYSTICK_MIN, JOYSTICK_MAX, PWM_MIN, PWM_MAX); // Convert joystick val to PWM value.
+    direction = ( signbit( joystick_val ) ? L298N::BACKWARD : L298N::FORWARD );
     
     Serial.print( command );
     Serial.print( ":" );
     Serial.println( pwmOutput );
-
+    
+    if(strcmp(command, "j1")  == 0){
+     
+     frontLeft.setSpeed( pwmOutput );
+     backLeft.setSpeed( pwmOutput );
+     
+     frontLeft.run( direction );
+     backLeft.run( direction );
+     
+    }else if(strcmp(command, "j2")  == 0){
+      frontRight.setSpeed( pwmOutput );
+      backRight.setSpeed( pwmOutput );
+      
+      frontRight.run( direction );
+      backRight.run( direction );
+    }
    }
 
-   if(strcmp(command, "x1")  == 0){
-    analogWrite(ledPin, pwmOutput);
-    frontLeft.setSpeed( pwmOutput );
-   }else if(strcmp(command, "x2")  == 0){
-    frontRight.setSpeed( pwmOutput );
-  }*/
+  
 
 }
