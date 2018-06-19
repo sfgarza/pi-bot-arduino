@@ -12,12 +12,12 @@ const long BAUD_RATE = 250000;
 
 L298N backRight(ENA, IN1, IN2);
 L298N frontRight(ENB, IN3, IN4);
-L298N frontLeft(ENC, IN5, IN4);
+L298N frontLeft(ENC, IN5, IN6);
 L298N backLeft(END, IN7, IN8);
 
 float  joystick_val = 0; 
 float  pwmOutput    = PWM_MIN;
-char   command[20];
+String command, value;
 int    direction;
 
 void setup() {
@@ -40,18 +40,16 @@ void setup() {
 void loop() {
   
   // Read data only when available.
-  if (Serial.available() > 0) {
-    Serial.readBytesUntil(':',command, 8); // First read command.
-    joystick_val = Serial.parseFloat(); // Then the command value.
+  if ( Serial.available() > 0 ) {
+    command = Serial.readStringUntil(':'); // First read command.
+    value   = Serial.readStringUntil(';');
     
-    pwmOutput = mapf(joystick_val, JOYSTICK_MIN, JOYSTICK_MAX, PWM_MIN, PWM_MAX); // Convert joystick val to PWM value.
-    direction = ( signbit( joystick_val ) ? L298N::BACKWARD : L298N::FORWARD );
+    pwmOutput = mapf( abs(value.toFloat()), JOYSTICK_MIN, JOYSTICK_MAX, PWM_MIN, PWM_MAX); // Convert joystick val to PWM value.
+    direction = ( signbit( value.toFloat() ) ? L298N::BACKWARD : L298N::FORWARD );
+
+    Serial.println( command + " : " + pwmOutput + " ("+ direction + ") " );
     
-    Serial.print( command );
-    Serial.print( ":" );
-    Serial.println( pwmOutput );
-    
-    if(strcmp(command, "j1")  == 0){
+    if(command.equals( "j1" )  == 0){
      
      frontLeft.setSpeed( pwmOutput );
      backLeft.setSpeed( pwmOutput );
@@ -59,7 +57,7 @@ void loop() {
      frontLeft.run( direction );
      backLeft.run( direction );
      
-    }else if(strcmp(command, "j2")  == 0){
+   }else if(command.equals( "j2" )  == 0){
       frontRight.setSpeed( pwmOutput );
       backRight.setSpeed( pwmOutput );
       
