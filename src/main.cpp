@@ -1,24 +1,20 @@
 #include <Arduino.h>
+#include <Servo.h>
 #include <Helpers.h>
 #include <L298N.h>
 #include <PinMap.h>
 
-#define JOYSTICK_MIN 0.0
-#define JOYSTICK_MAX 1.0
-#define PWM_MIN 0.0
-#define PWM_MAX 255.0
-
+// Serial communication baud rate set to the highest rate an arduino mega can handle.
 const long BAUD_RATE = 250000;
 
+// Initialize your motors. Pin Constants can be defined in lib/PinMap/src/PinMap.h
 L298N backRight(ENA, IN1, IN2);
 L298N frontRight(ENB, IN3, IN4);
 L298N frontLeft(ENC, IN5, IN6);
 L298N backLeft(END, IN7, IN8);
 
 float  joystick_val = 0; 
-float  pwmOutput    = PWM_MIN;
 String command, value;
-int    direction;
 
 void setup() {
 
@@ -30,10 +26,10 @@ void setup() {
     ; // wait for serial port to connect. Needed for native USB
   }
   
-  frontLeft.setSpeed( PWM_MIN );
-  backLeft.setSpeed( PWM_MIN );
-  frontRight.setSpeed( PWM_MIN );
-  backRight.setSpeed( PWM_MIN );
+  frontLeft.stop();
+  backLeft.stop();
+  frontRight.stop();
+  backRight.stop();
   
 }
 
@@ -41,31 +37,21 @@ void loop() {
   
   // Read data only when available.
   if ( Serial.available() > 0 ) {
+    
+    // Parse Commands.
     command = Serial.readStringUntil(':'); // First read command.
-    value   = Serial.readStringUntil(';');
+    value   = Serial.readStringUntil(';'); // Then read value.
+    joystick_val = value.toFloat();
     
-    pwmOutput = mapf( abs(value.toFloat()), JOYSTICK_MIN, JOYSTICK_MAX, PWM_MIN, PWM_MAX); // Convert joystick val to PWM value.
-    direction = ( signbit( value.toFloat() ) ? L298N::BACKWARD : L298N::FORWARD );
-
-    Serial.println( command + " : " + pwmOutput + " ("+ direction + ") " );
-    
-    if(command.equals( "j1" )  == 0){
-     
-     frontLeft.setSpeed( pwmOutput );
-     backLeft.setSpeed( pwmOutput );
-     
-     frontLeft.run( direction );
-     backLeft.run( direction );
-     
-   }else if(command.equals( "j2" )  == 0){
-      frontRight.setSpeed( pwmOutput );
-      backRight.setSpeed( pwmOutput );
-      
-      frontRight.run( direction );
-      backRight.run( direction );
+    //i.e. j1:0.23;
+    if(command.equals( "j1" )  == 0){ 
+      frontLeft.move( joystick_val );
+      backLeft.move( joystick_val );
+    //i.e. j2:-1.00;
+    }else if( command.equals( "j2" )  == 0){
+      frontRight.move( joystick_val );
+      backRight.move( joystick_val );
     }
    }
-
-  
-
+   
 }
