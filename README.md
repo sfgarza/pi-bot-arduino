@@ -1,4 +1,5 @@
 ### Pi Bot Arduino
+![Pi bot](docs/pi-bot.jpeg)
 
 - Set up to use [platformIO](https://platformio.org/install/cli) instead of default arduino IDE.
 
