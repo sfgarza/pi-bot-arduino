@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <Servo.h>
-#include <Helpers.h>
 #include <L298N.h>
 
 // Serial communication baud rate set to the highest rate an arduino mega can handle.
