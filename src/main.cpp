@@ -2,7 +2,6 @@
 #include <Servo.h>
 #include <Helpers.h>
 #include <L298N.h>
-#include <PinMap.h>
 
 // Serial communication baud rate set to the highest rate an arduino mega can handle.
 const long BAUD_RATE = 250000;

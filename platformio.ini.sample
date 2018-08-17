@@ -10,18 +10,30 @@
 [platformio]
 env_default = megaatmega2560
 
+[common]
+build_flags =
+  -D ledPin=13
+  -D ENA=3
+  -D IN1=30
+  -D IN2=28
+  -D ENB=5
+  -D IN3=24
+  -D IN4=26
+  -D ENC=44
+  -D IN5=42
+  -D IN6=43
+  -D END=45
+  -D IN7=41
+  -D IN8=40
+  
 [env:megaatmega2560]
 platform = atmelavr
 framework = arduino
 board = megaatmega2560
+build_flags = ${common.build_flags}
 
 [env:uno]
 platform = atmelavr
 framework = arduino
 board = uno
-
-[env:specific_defines]
-build_flags = -DFOO -DBAR=13
-
-; enable auto-uploading
-;targets = upload
+build_flags = ${common.build_flags}
