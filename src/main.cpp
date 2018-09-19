@@ -2,10 +2,7 @@
 #include <Servo.h>
 #include <L298N.h>
 
-// Serial communication baud rate set to the highest rate an arduino mega can handle.
-const long BAUD_RATE = 250000;
-
-// Initialize your motors. Pin Constants can be defined in lib/PinMap/src/PinMap.h
+// Initialize your motors. Pin Constants can be defined in platformio.ini build_flags.
 L298N backRight(ENA, IN1, IN2);
 L298N frontRight(ENB, IN3, IN4);
 L298N frontLeft(ENC, IN5, IN6);
@@ -41,6 +38,7 @@ void loop() {
     value   = Serial.readStringUntil(';'); // Then read value.
     joystick_val = value.toFloat();
     
+    // Tank Drive configuration.
     //i.e. j1:0.23;
     if(command.equals( "j1" )  == 0){ 
       frontLeft.move( joystick_val );
